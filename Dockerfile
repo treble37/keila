@@ -13,16 +13,16 @@
 #   - Ex: hexpm/elixir:1.14.2-erlang-25.1.2-debian-bullseye-20210902-slim
 #
 ARG ELIXIR_VERSION=1.14.2
-ARG OTP_VERSION=25.1.2
-ARG DEBIAN_VERSION=bullseye-20210902-slim
+ARG OTP_VERSION=25.1.2.1
+ARG DEBIAN_VERSION=bullseye-20230109-slim
 
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
 FROM ${BUILDER_IMAGE} as builder
 
-# install build dependencies
-RUN apt-get update -y && apt-get install -y build-essential git \
+# install build dependencies (and npm)
+RUN apt-get update -y && apt-get install -y build-essential git npm \
     && apt-get clean && rm -f /var/lib/apt/lists/*_*
 
 # prepare build dir
@@ -51,6 +51,12 @@ COPY priv priv
 COPY lib lib
 
 COPY assets assets
+
+# https://www.strangeleaflet.com/2022/12/28/things-i-ve-learned-deploying-a-phoenix-1-7-app-using-bandit-to-fly-io
+# Install / update  JavaScript dependencies on fly.io
+# (mix assets.deploy handles the rest)
+RUN npm install --prefix ./assets
+### END JS assets ###
 
 # compile assets
 RUN mix assets.deploy

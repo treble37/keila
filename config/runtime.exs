@@ -40,6 +40,7 @@ if config_env() == :prod do
 
     config :keila, Keila.Repo,
       url: db_url,
+      socket_options: [:inet6],
       ssl: ssl,
       ssl_opts: ssl_opts
   rescue
@@ -137,8 +138,8 @@ if config_env() == :prod do
   end
 
   # Hashids
-  secret_key_base =
-    Application.get_env(:keila, KeilaWeb.Endpoint) |> Keyword.fetch!(:secret_key_base)
+  secret_key_base = System.fetch_env!("SECRET_KEY_BASE")
+  # Application.get_env(:keila, KeilaWeb.Endpoint) |> Keyword.fetch!(:secret_key_base)
 
   hashid_salt =
     case System.get_env("HASHID_SALT") do
