@@ -43,3 +43,6 @@ npm-debug.log
 ops/k8s
 *.env
 .tool-versions
+.gitsecret/keys/random_seed
+!*.secret
+deploy_notes.md
